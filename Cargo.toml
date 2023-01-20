@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "node",
+    "pallets/template",
+    "pallets/base-fee",
+    "pallets/ethereum",
+    "pallets/evm",
+    "pallets/evm-chain-id",
+    "runtime",
+    "primitives/consensus",
+    "primitives/ethereum",
+    "primitives/evm",
+    "primitives/rpc",
+    "primitives/self-contained",
+    "primitives/storage",
+]
+[profile.release]
+panic = "unwind"
