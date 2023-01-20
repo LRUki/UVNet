@@ -20,7 +20,7 @@ use pallet_grandpa::{
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, H256, U256};
+use sp_core::{crypto::KeyTypeId, Get, OpaqueMetadata, H160, H256, U256};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
@@ -303,16 +303,15 @@ impl pallet_template::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 }
 
-/// Configure WASM smart-contract.
-
 parameter_types! {
-  pub const DepositPerItem: Balance = deposit(1, 0);
-  pub const DepositPerByte: Balance = deposit(0, 1);
-  pub const DeletionQueueDepth: u32 = 128;
-  pub DeletionWeightLimit: Weight = AVERAGE_ON_INITIALIZE_RATIO * BlockWeights::get().max_block;
-  pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
+	pub const DepositPerItem: Balance = deposit(1, 0);
+	pub const DepositPerByte: Balance = deposit(0, 1);
+	pub const DeletionQueueDepth: u32 = 128;
+	pub DeletionWeightLimit: Weight = AVERAGE_ON_INITIALIZE_RATIO * BlockWeights::get().max_block;
+	pub Schedule: pallet_contracts::Schedule<Runtime> = Default::default();
 }
 
+/// Configure the pallet for WASM smart-contract.
 impl pallet_contracts::Config for Runtime {
 	type Time = Timestamp;
 	type Randomness = RandomnessCollectiveFlip;
@@ -335,8 +334,7 @@ impl pallet_contracts::Config for Runtime {
 	type UnsafeUnstableInterface = ConstBool<false>;
 }
 
-/// Configure EVM smart-contract.
-
+/// Configure the pallets for EVM smart-contract.
 impl pallet_evm_chain_id::Config for Runtime {}
 
 parameter_types! {
