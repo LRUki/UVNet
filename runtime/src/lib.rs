@@ -362,43 +362,46 @@ impl pallet_base_fee::Config for Runtime {
 	type DefaultElasticity = DefaultElasticity;
 }
 
-pub struct FindAuthorTruncated<F>(PhantomData<F>);
-impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
-	fn find_author<'a, I>(digests: I) -> Option<H160>
-	where
-		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
-	{
-		if let Some(author_index) = F::find_author(digests) {
-			let authority_id = Aura::authorities()[author_index as usize].clone();
-			return Some(H160::from_slice(&authority_id.to_raw_vec()[4..24]));
-		}
-		None
-	}
-}
+// pub struct FindAuthorTruncated<F>(PhantomData<F>);
+// impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
+// 	fn find_author<'a, I>(digests: I) -> Option<H160>
+// 	where
+// 		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
+// 	{
+// 		if let Some(author_index) = F::find_author(digests) {
+// 			let authority_id = Aura::authorities()[author_index as usize].clone();
+// 			return Some(H160::from_slice(&authority_id.to_raw_vec()[4..24]));
+// 		}
+// 		None
+// 	}
+// }
 
-const WEIGHT_PER_GAS: u64 = 20_000;
 parameter_types! {
-	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT.ref_time() / WEIGHT_PER_GAS);
-	pub WeightPerGas: Weight = Weight::from_ref_time(WEIGHT_PER_GAS);
+	pub BlockGasLimit: U256 = U256::from(1000000);
+	pub WeightPerGas: Weight = Weight::from_ref_time(0);
 }
 
 impl pallet_evm::Config for Runtime {
-	type FeeCalculator = BaseFee;
-	type GasWeightMapping = pallet_evm::FixedGasWeightMapping<Self>;
+	type RuntimeEvent = RuntimeEvent;
+	type Currency = Balances;
+	type ChainId = EVMChainId;
+
 	type WeightPerGas = WeightPerGas;
+	type GasWeightMapping = pallet_evm::FixedGasWeightMapping<Self>;
+	type Runner = pallet_evm::runner::stack::Runner<Self>;
+
 	type BlockHashMapping = pallet_ethereum::EthereumBlockHashMapping<Self>;
+	type BlockGasLimit = BlockGasLimit;
+
 	type CallOrigin = EnsureAddressTruncated;
 	type WithdrawOrigin = EnsureAddressTruncated;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
-	type Currency = Balances;
-	type RuntimeEvent = RuntimeEvent;
+	
+	type FeeCalculator = ();
 	type PrecompilesType = ();
 	type PrecompilesValue = ();
-	type ChainId = EVMChainId;
-	type BlockGasLimit = BlockGasLimit;
-	type Runner = pallet_evm::runner::stack::Runner<Self>;
 	type OnChargeTransaction = ();
-	type FindAuthor = FindAuthorTruncated<Aura>;
+	type FindAuthor = ();
 }
 
 impl pallet_ethereum::Config for Runtime {
