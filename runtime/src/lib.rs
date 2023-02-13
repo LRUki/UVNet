@@ -6,8 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use core::marker::PhantomData;
-use frame_support::{dispatch::Dispatchable, traits::FindAuthor, ConsensusEngineId};
+use frame_support::{dispatch::Dispatchable};
 use pallet_contracts::Determinism;
 // Frontier
 use fp_rpc::TransactionStatus;
@@ -28,7 +27,7 @@ use sp_runtime::{
 		One, PostDispatchInfoOf, Verify,
 	},
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
-	ApplyExtrinsicResult, MultiSignature, RuntimeAppPublic,
+	ApplyExtrinsicResult, MultiSignature,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -361,20 +360,6 @@ impl pallet_base_fee::Config for Runtime {
 	type DefaultBaseFeePerGas = DefaultBaseFeePerGas;
 	type DefaultElasticity = DefaultElasticity;
 }
-
-// pub struct FindAuthorTruncated<F>(PhantomData<F>);
-// impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
-// 	fn find_author<'a, I>(digests: I) -> Option<H160>
-// 	where
-// 		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
-// 	{
-// 		if let Some(author_index) = F::find_author(digests) {
-// 			let authority_id = Aura::authorities()[author_index as usize].clone();
-// 			return Some(H160::from_slice(&authority_id.to_raw_vec()[4..24]));
-// 		}
-// 		None
-// 	}
-// }
 
 parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(1000000);
