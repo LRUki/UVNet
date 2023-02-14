@@ -60,6 +60,14 @@ pallet-base-fee = { path = "../pallets/base-fee", default-features = false }
 pallet-ethereum = { path = "../pallets/ethereum", default-features = false }
 pallet-evm = { path = "../pallets/evm", default-features = false }
 pallet-evm-chain-id = { path = "../pallets/evm-chain-id", default-features = false }
+pallet-evm-precompile-simple = { path = "../pallets/evm/precompile/simple", default-features = false }
+pallet-evm-precompile-modexp = { path = "../pallets/evm/precompile/modexp", default-features = false }
+pallet-evm-precompile-blake2 = { path = "../pallets/evm/precompile/blake2", default-features = false }
+pallet-evm-precompile-bn128 = { path = "../pallets/evm/precompile/bn128", default-features = false }
+pallet-evm-precompile-dispatch = { path = "../pallets/evm/precompile/dispatch", default-features = false }
+pallet-evm-precompile-ed25519 = { path = "../pallets/evm/precompile/ed25519", default-features = false }
+pallet-evm-precompile-sha3fips = { path = "../pallets/evm/precompile/sha3fips", default-features = false }
+ 
 
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }

@@ -34,6 +34,8 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
+mod precompiles;
+
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
 	construct_runtime, parameter_types,
@@ -364,6 +366,7 @@ impl pallet_base_fee::Config for Runtime {
 parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(1000000);
 	pub WeightPerGas: Weight = Weight::from_ref_time(0);
+	pub PrecompilesValue: precompiles::Precompiles<Runtime> = precompiles::Precompiles::<_>::new();
 }
 
 impl pallet_evm::Config for Runtime {
@@ -383,8 +386,8 @@ impl pallet_evm::Config for Runtime {
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
 	
 	type FeeCalculator = ();
-	type PrecompilesType = ();
-	type PrecompilesValue = ();
+	type PrecompilesType = precompiles::Precompiles<Runtime>;
+	type PrecompilesValue = PrecompilesValue;
 	type OnChargeTransaction = ();
 	type FindAuthor = ();
 }
