@@ -10,6 +10,7 @@ use pallet_evm_precompile_bn128::{Bn128Add, Bn128Mul, Bn128Pairing};
 use pallet_evm_precompile_dispatch::Dispatch;
 use pallet_evm_precompile_ed25519::Ed25519Verify;
 use pallet_evm_precompile_sha3fips::Sha3FIPS256;
+use pallet_template_precompile::PalletTemplatePrecompile;
 
 /// The PrecompileSet installed in the runtime.
 #[derive(Debug, Default, Clone, Copy)]
@@ -24,14 +25,15 @@ where
     }
 
     pub fn used_address() -> impl Iterator<Item = H160> {
-        sp_std::vec![1,2,3,4,5].into_iter().map(hash)
+        sp_std::vec![1,2,3,4,5,6,7,8,9,1024,1025,1026,1027,999].into_iter().map(hash)
     }
 }
 
 impl<R> PrecompileSet for Precompiles<R> 
 where
-    R: pallet_evm::Config,
-    Dispatch<R>: Precompile
+    R: pallet_evm::Config + pallet_template::Config,
+    Dispatch<R>: Precompile,
+    PalletTemplatePrecompile<R>: Precompile
 {
     fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<PrecompileResult> {
         match handle.code_address() {
@@ -50,6 +52,8 @@ where
             addr if addr == hash(1025) => Some(Dispatch::<R>::execute(handle)),
             addr if addr == hash(1026) => Some(ECRecoverPublicKey::execute(handle)),
             addr if addr == hash(1027) => Some(Ed25519Verify::execute(handle)),
+
+            addr if addr == hash(999) => Some(PalletTemplatePrecompile::<R>::execute(handle)),
             _ => None
         }
     }
