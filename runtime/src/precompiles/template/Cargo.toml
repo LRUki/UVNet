@@ -16,6 +16,7 @@ fp-evm = { version = "3.0.0-dev", path = "../../../../primitives/evm", default-f
 precompile-utils = { path = "../utils", default-features = false}
 pallet-template = { path = "../../../../pallets/template", default-features = false}
 pallet-evm = { version = "7.0.0-dev", path = "../../../../pallets/evm", default-features = false }
+log = { version = "0.4.17", default-features = false }
 
 [features]
 default = ["std"]

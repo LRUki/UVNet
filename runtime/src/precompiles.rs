@@ -25,7 +25,7 @@ where
     }
 
     pub fn used_address() -> impl Iterator<Item = H160> {
-        sp_std::vec![1,2,3,4,5,6,7,8,9,1024,1025,1026,1027,999].into_iter().map(hash)
+        sp_std::vec![1,2,3,4,5,6,7,8,9,1024,1025,1026,1027,2049].into_iter().map(hash)
     }
 }
 
@@ -52,13 +52,13 @@ where
             addr if addr == hash(1025) => Some(Dispatch::<R>::execute(handle)),
             addr if addr == hash(1026) => Some(ECRecoverPublicKey::execute(handle)),
             addr if addr == hash(1027) => Some(Ed25519Verify::execute(handle)),
-
-            addr if addr == hash(999) => Some(PalletTemplatePrecompile::<R>::execute(handle)),
+            //0x0000000000000000000000000000000000000801 in hexadecimal
+            addr if addr == hash(2049) => Some(PalletTemplatePrecompile::<R>::execute(handle)),
             _ => None
         }
     }
     fn is_precompile(&self, address: H160) -> bool {
-       Self::used_address().any(|precompile_addr| precompile_addr == address)
+        Self::used_address().any(|precompile_addr| precompile_addr == address)
     }
 }
 

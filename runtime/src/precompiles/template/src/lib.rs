@@ -6,7 +6,7 @@ use frame_support::{
 };
 use pallet_evm::{AddressMapping, Precompile, ExitSucceed};
 use precompile_utils::{
-	 EvmDataWriter, RuntimeHelper, PrecompileHandleExt,FunctionModifier,
+	 EvmDataWriter, RuntimeHelper, PrecompileHandleExt, FunctionModifier,
 };
 
 use fp_evm::{ PrecompileOutput, PrecompileHandle, PrecompileResult};
@@ -56,9 +56,10 @@ where
 	fn do_something(
         handle: &mut impl PrecompileHandle,
 	) -> PrecompileResult {
-        // handle.check_function_modifier(FunctionModifier::NonPayable)?;
-        
+        handle.check_function_modifier(FunctionModifier::NonPayable)?;
+	
         let mut input = handle.read_input()?;
+
 		// Bound check. We expect a single argument passed in.
 		input.expect_arguments(1)?;
 		
@@ -78,7 +79,6 @@ where
 			call,
 		)?;
 
-
 		Ok(PrecompileOutput {
 			exit_status: ExitSucceed::Stopped,
 			output: Default::default(),
@@ -88,7 +88,7 @@ where
 	fn get_value(
         handle: &mut impl PrecompileHandle,
 	) -> PrecompileResult {
-        // handle.check_function_modifier(FunctionModifier::View)?;
+        handle.check_function_modifier(FunctionModifier::View)?;
 
         let input = handle.read_input()?;
 		// Bound check

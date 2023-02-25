@@ -364,8 +364,8 @@ impl pallet_base_fee::Config for Runtime {
 }
 
 parameter_types! {
-	pub BlockGasLimit: U256 = U256::from(1000000);
-	pub WeightPerGas: Weight = Weight::from_ref_time(0);
+	pub BlockGasLimit: U256 = U256::from(10000000);
+	pub WeightPerGas: Weight = Weight::from_ref_time(10000);
 	pub PrecompilesValue: precompiles::Precompiles<Runtime> = precompiles::Precompiles::<_>::new();
 }
 
