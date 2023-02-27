@@ -12,10 +12,10 @@ frame-support = { git = "https://github.com/paritytech/substrate", branch = "pol
 frame-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
 sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
 
-fp-evm = { version = "3.0.0-dev", path = "../../../../primitives/evm", default-features = false }
+fp-evm = { version = "3.0.0-dev", path = "../../primitives/evm", default-features = false }
 precompile-utils = { path = "../utils", default-features = false}
-pallet-template = { path = "../../../../pallets/template", default-features = false}
-pallet-evm = { version = "7.0.0-dev", path = "../../../../pallets/evm", default-features = false }
+pallet-template = { path = "../../pallets/template", default-features = false}
+pallet-evm = { version = "7.0.0-dev", path = "../../pallets/evm", default-features = false }
 log = { version = "0.4.17", default-features = false }
 
 [features]
