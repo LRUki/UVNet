@@ -155,7 +155,6 @@ fn testnet_genesis(
 		transaction_payment: Default::default(),
 
 		evm_chain_id: EVMChainIdConfig { chain_id: 1337 },
-		base_fee: Default::default(),
 		evm: EVMConfig {
 			accounts: {
 				let mut map = BTreeMap::new();

@@ -2,7 +2,6 @@
 members = [
     "node",
     "pallets/template",
-    "pallets/base-fee",
     "pallets/ethereum",
     "pallets/evm",
     "pallets/evm-chain-id",
