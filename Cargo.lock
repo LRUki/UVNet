@@ -4009,7 +4009,6 @@ dependencies = [
  "log",
  "pallet-aura",
  "pallet-balances",
- "pallet-base-fee",
  "pallet-contracts",
  "pallet-contracts-primitives",
  "pallet-ethereum",
@@ -4272,21 +4271,6 @@ dependencies = [
  "scale-info",
  "sp-runtime",
  "sp-std 5.0.0",
-]
-
-[[package]]
-name = "pallet-base-fee"
-version = "1.0.0"
-dependencies = [
- "fp-evm",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-core 7.0.0",
- "sp-io",
- "sp-runtime",
 ]
 
 [[package]]

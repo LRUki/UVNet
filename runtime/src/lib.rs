@@ -339,31 +339,6 @@ impl pallet_contracts::Config for Runtime {
 impl pallet_evm_chain_id::Config for Runtime {}
 
 parameter_types! {
-	pub DefaultBaseFeePerGas: U256 = U256::from(1_000_000_000);
-	pub DefaultElasticity: Permill = Permill::from_parts(125_000);
-}
-
-pub struct BaseFeeThreshold;
-impl pallet_base_fee::BaseFeeThreshold for BaseFeeThreshold {
-	fn lower() -> Permill {
-		Permill::zero()
-	}
-	fn ideal() -> Permill {
-		Permill::from_parts(500_000)
-	}
-	fn upper() -> Permill {
-		Permill::from_parts(1_000_000)
-	}
-}
-
-impl pallet_base_fee::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type Threshold = BaseFeeThreshold;
-	type DefaultBaseFeePerGas = DefaultBaseFeePerGas;
-	type DefaultElasticity = DefaultElasticity;
-}
-
-parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(10000000);
 	pub WeightPerGas: Weight = Weight::from_ref_time(10000);
 	pub PrecompilesValue: precompiles::Precompiles<Runtime> = precompiles::Precompiles::<_>::new();
@@ -417,7 +392,6 @@ construct_runtime!(
 		TemplateModule: pallet_template,
 		Contracts: pallet_contracts,
 		EVMChainId: pallet_evm_chain_id,
-		BaseFee: pallet_base_fee,
 		EVM: pallet_evm,
 		Ethereum: pallet_ethereum,
 	}
@@ -860,7 +834,7 @@ impl_runtime_apis! {
 		}
 
 		fn elasticity() -> Option<Permill> {
-			Some(BaseFee::elasticity())
+			None
 		}
 	}
 

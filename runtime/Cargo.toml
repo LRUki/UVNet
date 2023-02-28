@@ -57,7 +57,6 @@ pallet-template = { version = "4.0.0-dev", default-features = false, path = "../
 # EVM contract
 fp-rpc = { path = "../primitives/rpc", default-features = false }
 fp-self-contained = { path = "../primitives/self-contained", default-features = false }
-pallet-base-fee = { path = "../pallets/base-fee", default-features = false }
 pallet-ethereum = { path = "../pallets/ethereum", default-features = false }
 pallet-evm = { path = "../pallets/evm", default-features = false }
 pallet-evm-chain-id = { path = "../pallets/evm-chain-id", default-features = false }
@@ -103,7 +102,6 @@ std = [
 	"fp-rpc/std",
 	"fp-self-contained/std",
 	# Frontier FRAME
-	"pallet-base-fee/std",
 	"pallet-ethereum/std",
 	"pallet-evm/std",
 	"pallet-evm-chain-id/std",
