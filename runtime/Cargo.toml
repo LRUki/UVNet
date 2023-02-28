@@ -68,7 +68,7 @@ pallet-evm-precompile-dispatch = { path = "../pallets/evm/precompile/dispatch", 
 pallet-evm-precompile-ed25519 = { path = "../pallets/evm/precompile/ed25519", default-features = false }
 pallet-evm-precompile-sha3fips = { path = "../pallets/evm/precompile/sha3fips", default-features = false }
 
-pallet-template-precompile = {path = "src/precompiles/template", default-features = false}
+pallet-template-precompile = {path = "../precompile/template", default-features = false}
  
 
 [build-dependencies]

@@ -26,8 +26,8 @@ sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkad
 sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
 
 # Frontier
-fp-evm = { version = "3.0.0-dev", path = "../../../../primitives/evm", default-features = false }
-pallet-evm = { version = "7.0.0-dev", path = "../../../../pallets/evm", default-features = false }
+fp-evm = { version = "3.0.0-dev", path = "../../primitives/evm", default-features = false }
+pallet-evm = { version = "7.0.0-dev", path = "../../pallets/evm", default-features = false }
 
 [dev-dependencies]
 hex-literal = "0.3.1"
