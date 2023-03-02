@@ -6,7 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_support::{dispatch::Dispatchable};
+use frame_support::dispatch::Dispatchable;
 use pallet_contracts::Determinism;
 // Frontier
 use fp_rpc::TransactionStatus;
@@ -71,6 +71,8 @@ pub type Signature = MultiSignature;
 /// Some way of identifying an account on the chain. We intentionally make it equivalent
 /// to the public key of our transaction signing scheme.
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+
+pub type Lookup = AccountIdLookup<AccountId, ()>;
 
 /// Balance of an account.
 pub type Balance = u128;
@@ -189,7 +191,7 @@ impl frame_system::Config for Runtime {
 	/// The aggregated dispatch type that is available for extrinsics.
 	type RuntimeCall = RuntimeCall;
 	/// The lookup mechanism to get account ID from whatever is passed in dispatchers.
-	type Lookup = AccountIdLookup<AccountId, ()>;
+	type Lookup = Lookup;
 	/// The index type for storing how many extrinsics an account has signed.
 	type Index = Index;
 	/// The index type for blocks.
@@ -359,7 +361,7 @@ impl pallet_evm::Config for Runtime {
 	type CallOrigin = EnsureAddressTruncated;
 	type WithdrawOrigin = EnsureAddressTruncated;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
-	
+
 	type FeeCalculator = ();
 	type PrecompilesType = precompiles::Precompiles<Runtime>;
 	type PrecompilesValue = PrecompilesValue;
