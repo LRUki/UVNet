@@ -53,6 +53,7 @@ frame-system-benchmarking = { version = "4.0.0-dev", default-features = false, g
 
 # Local Dependencies
 pallet-template = { version = "4.0.0-dev", default-features = false, path = "../pallets/template" }
+pallet-uvm = {default-features = false, path = "../pallets/uvm" }
 
 # EVM contract
 fp-rpc = { path = "../primitives/rpc", default-features = false }
@@ -69,6 +70,7 @@ pallet-evm-precompile-ed25519 = { path = "../pallets/evm/precompile/ed25519", de
 pallet-evm-precompile-sha3fips = { path = "../pallets/evm/precompile/sha3fips", default-features = false }
 
 pallet-template-precompile = {path = "../precompile/template", default-features = false}
+pallet-uvm-precompile = {path = "../precompile/uvm", default-features = false}
  
 
 [build-dependencies]
