@@ -9,15 +9,13 @@ use frame_support::{
 };
 use pallet_contracts::chain_extension::UncheckedFrom;
 use pallet_evm::{AddressMapping, ExitSucceed, Precompile};
-use precompile_utils::{Bytes, FunctionModifier, PrecompileHandleExt, RuntimeHelper};
+use precompile_utils::{revert, Bytes, FunctionModifier, PrecompileHandleExt, RuntimeHelper};
 use sp_runtime::{traits::StaticLookup, AccountId32};
 
 use fp_evm::{PrecompileHandle, PrecompileOutput, PrecompileResult};
 use sp_runtime::traits::AccountIdLookup;
 
 use sp_std::{fmt::Debug, marker::PhantomData};
-
-use sp_core::H256;
 
 type BalanceOf<T> = <<T as pallet_contracts::Config>::Currency as Currency<
 	<T as frame_system::Config>::AccountId,
@@ -28,7 +26,7 @@ type BalanceOf<T> = <<T as pallet_contracts::Config>::Currency as Currency<
 #[precompile_utils::generate_function_selector]
 #[derive(Debug, PartialEq)]
 enum Action {
-	UvmCall = "uvm_call(bytes32, bytes)",
+	UvmCall = "uvm_call(bytes,bytes)",
 }
 //bytes: contract address to call (32 bytes for wasm and 20bytes for evm).
 //bytes: input data.
@@ -55,6 +53,8 @@ where
 {
 	fn execute(handle: &mut impl PrecompileHandle) -> PrecompileResult {
 		let selector = handle.read_selector()?;
+		let m = handle.check_function_modifier(FunctionModifier::NonPayable);
+		log::info!("{:?}", m);
 		match selector {
 			Action::UvmCall => Self::uvm_call(handle),
 		}
@@ -79,27 +79,18 @@ where
 	<BalanceOf<R> as HasCompact>::Type: Clone + Eq + PartialEq + Debug + TypeInfo + Encode,
 {
 	fn uvm_call(handle: &mut impl PrecompileHandle) -> PrecompileResult {
-		log::info!("");
-		log::info!("");
-		log::info!("");
-		log::info!("");
-		handle.check_function_modifier(FunctionModifier::NonPayable)?;
-
 		let mut input = handle.read_input()?;
 
-		// Bound check. We expect three argument passed in.
 		input.expect_arguments(2)?;
 
-		let contract_account: H256 = input.read::<H256>()?.into();
-		log::info!("contract_account H256:{:?}", contract_account);
+		let contract_address = input.read::<Bytes>()?;
+		let contract_account_id = AccountId32::try_from(contract_address.as_bytes())
+			.map_err(|_| revert("Expected 32 bytes for contract address."))?;
 
-		let account_id = AccountId32::new(contract_account.into());
-		log::info!("account_id:{:?}", account_id);
+		let dest =
+			<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(contract_account_id);
 
-		let dest = <AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(account_id);
-		log::info!("dest:{:?}", dest);
 		let input_data: Bytes = input.read::<Bytes>()?.into();
-		log::info!("input_data:{:?}", input_data);
 
 		// Use pallet-evm's account mapping to determine what AccountId to dispatch from.
 		let origin = R::AddressMapping::into_account_id(handle.context().caller);
@@ -113,7 +104,6 @@ where
 		};
 
 		// Dispatch the call into the runtime.
-		// The RuntimeHelper tells how much gas was actually used.
 		RuntimeHelper::<R>::try_dispatch(handle, Some(origin).into(), call)?;
 
 		Ok(PrecompileOutput { exit_status: ExitSucceed::Stopped, output: Default::default() })

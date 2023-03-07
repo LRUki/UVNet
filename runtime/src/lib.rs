@@ -341,7 +341,7 @@ impl pallet_evm_chain_id::Config for Runtime {}
 
 parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(10000000);
-	pub WeightPerGas: Weight = Weight::from_ref_time(10000);
+	pub WeightPerGas: Weight = Weight::from_ref_time(100000);
 	pub PrecompilesValue: precompiles::Precompiles<Runtime> = precompiles::Precompiles::<_>::new();
 }
 
