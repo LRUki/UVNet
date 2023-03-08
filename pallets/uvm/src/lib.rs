@@ -7,9 +7,18 @@ pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
+	use frame_support::{dispatch::RawOrigin, pallet_prelude::*, traits::Currency};
 	use frame_system::pallet_prelude::*;
-	// use sp_runtime::traits::AccountIdLookup;
+	use sp_runtime::{
+		app_crypto::UncheckedFrom,
+		traits::{AccountIdLookup, StaticLookup},
+		AccountId32,
+	};
+	use sp_std::{fmt::Debug, vec::Vec};
+
+	type BalanceOf<T> = <<T as pallet_contracts::Config>::Currency as Currency<
+		<T as frame_system::Config>::AccountId,
+	>>::Balance;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -17,7 +26,7 @@ pub mod pallet {
 
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
+	pub trait Config: frame_system::Config + pallet_contracts::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
@@ -27,32 +36,69 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [something, who]
-		Called { by: T::AccountId, to: T::AccountId },
+		UvmCall { from: T::AccountId, to: T::AccountId },
+	}
+
+	#[pallet::error]
+	pub enum Error<T> {
+		OutOfGas,
+		ExecutionError(u64),
+		InvalidInput,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
-	impl<T: Config> Pallet<T> {
+	impl<T: Config> Pallet<T>
+	where
+		T: frame_system::Config<Lookup = AccountIdLookup<AccountId32, ()>>,
+		T::AccountId: UncheckedFrom<T::Hash> + AsRef<[u8]>,
+		<BalanceOf<T> as codec::HasCompact>::Type:
+			Clone + Eq + PartialEq + Debug + TypeInfo + Encode,
+	{
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(0)]
-		pub fn call_wasm(origin: OriginFor<T>, dest: T::AccountId) -> DispatchResult {
+		pub fn call_wasm(
+			origin: OriginFor<T>,
+			contract_address: Vec<u8>,
+			input: Vec<u8>,
+			gas_limit: Option<Weight>,
+		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
-			// // let gas_limit = Weight::from
-			// let res = pallet_contracts::Pallet::<T>::call(
-			// 	frame_support::dispatch::RawOrigin::Signed(from).into(),
-			// 	dest,
-			// 	Default::default(),
-			// 	gas_limit.into(),
-			// 	None,
-			// 	input,
-			// );
 
-			Ok(())
+			let contract_account_id = AccountId32::try_from(&contract_address[..])
+				.map_err(|_| Error::<T>::InvalidInput)?;
+
+			let dest =
+				<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(contract_account_id);
+
+			let res = pallet_contracts::Pallet::<T>::call(
+				RawOrigin::Signed(from).into(),
+				dest,
+				Default::default(),
+				gas_limit.unwrap_or(Weight::from_parts(20000000000, 10000000)),
+				None,
+				input,
+			)
+			.map_err(|e| {
+				let consumed_weight = if let Some(weight) = e.post_info.actual_weight {
+					weight.ref_time()
+				} else {
+					gas_limit.map_or(0, |g| g.ref_time())
+				};
+				return Error::<T>::ExecutionError(consumed_weight);
+			});
+
+			return match res {
+				Err(e) => {
+					return Err(e.into());
+				},
+				_ => Ok(()),
+			};
+
+			// Ok(())
 		}
 	}
 }
