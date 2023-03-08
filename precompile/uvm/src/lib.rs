@@ -36,7 +36,7 @@ pub struct PalletUvmPrecompile<R>(PhantomData<R>);
 
 impl<R> Precompile for PalletUvmPrecompile<R>
 where
-	R: pallet_contracts::Config,
+	R: pallet_uvm::Config,
 	R: pallet_evm::Config,
 	R: frame_system::Config<Lookup = AccountIdLookup<AccountId32, ()>>,
 
@@ -47,12 +47,13 @@ where
 		Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo,
 	<<R as frame_system::Config>::RuntimeCall as Dispatchable>::RuntimeOrigin:
 		From<Option<R::AccountId>>,
-	<R as frame_system::Config>::RuntimeCall: From<pallet_contracts::Call<R>>,
+	<R as frame_system::Config>::RuntimeCall: From<pallet_uvm::Call<R>>,
 
 	<BalanceOf<R> as HasCompact>::Type: Clone + Eq + PartialEq + Debug + TypeInfo + Encode,
 {
 	fn execute(handle: &mut impl PrecompileHandle) -> PrecompileResult {
 		let selector = handle.read_selector()?;
+		log::info!("==================selector:{:?}======================", selector);
 		let m = handle.check_function_modifier(FunctionModifier::NonPayable);
 		log::info!("{:?}", m);
 		match selector {
@@ -63,45 +64,35 @@ where
 
 impl<R> PalletUvmPrecompile<R>
 where
-	R: pallet_contracts::Config,
+	R: pallet_uvm::Config,
 	R: pallet_evm::Config,
 	R: frame_system::Config<Lookup = AccountIdLookup<AccountId32, ()>>,
 
-	<R as frame_system::Config>::AccountId: AsRef<[u8]>,
-	<R as frame_system::Config>::AccountId: UncheckedFrom<<R as frame_system::Config>::Hash>,
+	<R as frame_system::Config>::AccountId: AsRef<[u8]> + UncheckedFrom<R::Hash>,
 
 	<R as frame_system::Config>::RuntimeCall:
 		Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo,
 	<<R as frame_system::Config>::RuntimeCall as Dispatchable>::RuntimeOrigin:
 		From<Option<R::AccountId>>,
-	<R as frame_system::Config>::RuntimeCall: From<pallet_contracts::Call<R>>,
+	<R as frame_system::Config>::RuntimeCall: From<pallet_uvm::Call<R>>,
 
 	<BalanceOf<R> as HasCompact>::Type: Clone + Eq + PartialEq + Debug + TypeInfo + Encode,
 {
 	fn uvm_call(handle: &mut impl PrecompileHandle) -> PrecompileResult {
 		let mut input = handle.read_input()?;
 
+		log::info!("==================uvm======================");
+
 		input.expect_arguments(2)?;
 
-		let contract_address = input.read::<Bytes>()?;
-		let contract_account_id = AccountId32::try_from(contract_address.as_bytes())
-			.map_err(|_| revert("Expected 32 bytes for contract address."))?;
+		let contract_address = input.read::<Bytes>()?.0;
 
-		let dest =
-			<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(contract_account_id);
-
-		let input_data: Bytes = input.read::<Bytes>()?.into();
+		let input = input.read::<Bytes>()?.0;
 
 		// Use pallet-evm's account mapping to determine what AccountId to dispatch from.
 		let origin = R::AddressMapping::into_account_id(handle.context().caller);
 
-		let call = pallet_contracts::Call::<R>::call {
-			dest,
-			value: Default::default(),
-			storage_deposit_limit: None,
-			gas_limit: Weight::from_parts(20000000000, 10000000),
-			data: input_data.into(),
-		};
+		let call = pallet_uvm::Call::<R>::call_wasm { contract_address, input, gas_limit: None };
 
 		// Dispatch the call into the runtime.
 		RuntimeHelper::<R>::try_dispatch(handle, Some(origin).into(), call)?;

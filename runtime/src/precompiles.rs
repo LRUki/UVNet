@@ -43,6 +43,9 @@ where
 	PalletUvmPrecompile<R>: Precompile,
 {
 	fn execute(&self, handle: &mut impl PrecompileHandle) -> Option<PrecompileResult> {
+		log::info!("");
+		log::info!("");
+		log::info!("{:?}", handle.code_address());
 		match handle.code_address() {
 			// Ethereum precompiles :
 			addr if addr == hash(1) => Some(ECRecover::execute(handle)),

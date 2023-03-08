@@ -42,7 +42,7 @@ pub mod pallet {
 	#[pallet::error]
 	pub enum Error<T> {
 		OutOfGas,
-		ExecutionError(u64),
+		// ExecutionErreor((u64)),
 		InvalidInput,
 	}
 
@@ -67,12 +67,15 @@ pub mod pallet {
 			gas_limit: Option<Weight>,
 		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
+			log::info!("=========== call_wasm =============");
 
 			let contract_account_id = AccountId32::try_from(&contract_address[..])
 				.map_err(|_| Error::<T>::InvalidInput)?;
+			log::info!("contract_account_id{:?}", contract_account_id);
 
 			let dest =
 				<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(contract_account_id);
+			log::info!("dest{:?}", dest);
 
 			let res = pallet_contracts::Pallet::<T>::call(
 				RawOrigin::Signed(from).into(),
@@ -88,8 +91,10 @@ pub mod pallet {
 				} else {
 					gas_limit.map_or(0, |g| g.ref_time())
 				};
-				return Error::<T>::ExecutionError(consumed_weight);
+				return Error::<T>::OutOfGas;
+				// return Error::<T>::ExecutionError(consumed_weight);
 			});
+			log::info!("res{:?}", res);
 
 			return match res {
 				Err(e) => {
@@ -97,8 +102,6 @@ pub mod pallet {
 				},
 				_ => Ok(()),
 			};
-
-			// Ok(())
 		}
 	}
 }

@@ -373,6 +373,10 @@ impl pallet_ethereum::Config for Runtime {
 	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
 }
 
+impl pallet_uvm::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub struct Runtime
@@ -395,6 +399,7 @@ construct_runtime!(
 		EVMChainId: pallet_evm_chain_id,
 		EVM: pallet_evm,
 		Ethereum: pallet_ethereum,
+		UVM: pallet_uvm,
 	}
 );
 
