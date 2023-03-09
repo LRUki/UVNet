@@ -4029,6 +4029,8 @@ dependencies = [
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-uvm",
+ "pallet-uvm-precompile",
  "parity-scale-codec",
  "scale-info",
  "sp-api",
@@ -4648,6 +4650,42 @@ dependencies = [
  "scale-info",
  "sp-core 7.0.0",
  "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "pallet-uvm"
+version = "4.0.0-dev"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-contracts",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core 7.0.0",
+ "sp-io",
+ "sp-runtime",
+ "sp-std 5.0.0",
+]
+
+[[package]]
+name = "pallet-uvm-precompile"
+version = "1.0.0-dev"
+dependencies = [
+ "fp-evm",
+ "frame-support",
+ "frame-system",
+ "log",
+ "num_enum",
+ "pallet-balances",
+ "pallet-contracts",
+ "pallet-evm",
+ "pallet-uvm",
+ "precompile-utils",
+ "sp-core 7.0.0",
  "sp-runtime",
  "sp-std 5.0.0",
 ]

@@ -1,0 +1,33 @@
+[package]
+name = "pallet-uvm-precompile"
+version = "1.0.0-dev"
+authors = ["LRUKi", "PureStake"]
+description = "Template precompiles."
+edition = "2021"
+
+[dependencies]
+
+num_enum = {version = "0.5.3", default-features = false}
+frame-support = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
+frame-system = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
+sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
+
+fp-evm = { version = "3.0.0-dev", path = "../../primitives/evm", default-features = false }
+precompile-utils = { path = "../utils", default-features = false}
+pallet-evm = { version = "7.0.0-dev", path = "../../pallets/evm", default-features = false }
+log = { version = "0.4.17", default-features = false }
+pallet-balances = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35" }
+pallet-contracts = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.35"  }
+pallet-uvm = { path = "../../pallets/uvm", default-features = false}
+sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
+sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.35", default-features = false }
+[features]
+default = ["std"]
+std = [
+    "frame-support/std",
+    "frame-system/std",
+    "sp-std/std",
+    "fp-evm/std",
+    "pallet-evm/std",
+    'num_enum/std'
+]

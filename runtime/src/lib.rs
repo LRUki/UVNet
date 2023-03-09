@@ -6,7 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_support::{dispatch::Dispatchable};
+use frame_support::dispatch::Dispatchable;
 use pallet_contracts::Determinism;
 // Frontier
 use fp_rpc::TransactionStatus;
@@ -39,6 +39,7 @@ mod precompiles;
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
 	construct_runtime, parameter_types,
+	sp_runtime::AccountId32,
 	traits::{
 		ConstBool, ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Nothing,
 		Randomness, StorageInfo,
@@ -189,7 +190,7 @@ impl frame_system::Config for Runtime {
 	/// The aggregated dispatch type that is available for extrinsics.
 	type RuntimeCall = RuntimeCall;
 	/// The lookup mechanism to get account ID from whatever is passed in dispatchers.
-	type Lookup = AccountIdLookup<AccountId, ()>;
+	type Lookup = AccountIdLookup<AccountId32, ()>;
 	/// The index type for storing how many extrinsics an account has signed.
 	type Index = Index;
 	/// The index type for blocks.
@@ -340,7 +341,7 @@ impl pallet_evm_chain_id::Config for Runtime {}
 
 parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(10000000);
-	pub WeightPerGas: Weight = Weight::from_ref_time(10000);
+	pub WeightPerGas: Weight = Weight::from_ref_time(100000);
 	pub PrecompilesValue: precompiles::Precompiles<Runtime> = precompiles::Precompiles::<_>::new();
 }
 
@@ -359,7 +360,7 @@ impl pallet_evm::Config for Runtime {
 	type CallOrigin = EnsureAddressTruncated;
 	type WithdrawOrigin = EnsureAddressTruncated;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
-	
+
 	type FeeCalculator = ();
 	type PrecompilesType = precompiles::Precompiles<Runtime>;
 	type PrecompilesValue = PrecompilesValue;
@@ -370,6 +371,10 @@ impl pallet_evm::Config for Runtime {
 impl pallet_ethereum::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
+}
+
+impl pallet_uvm::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -394,6 +399,7 @@ construct_runtime!(
 		EVMChainId: pallet_evm_chain_id,
 		EVM: pallet_evm,
 		Ethereum: pallet_ethereum,
+		UVM: pallet_uvm,
 	}
 );
 

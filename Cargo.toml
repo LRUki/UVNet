@@ -2,6 +2,7 @@
 members = [
     "node",
     "pallets/template",
+    "pallets/uvm",
     "pallets/ethereum",
     "pallets/evm",
     "pallets/evm-chain-id",
@@ -13,6 +14,7 @@ members = [
     "pallets/evm/precompile/sha3fips",
     "runtime",
     "precompile/template",
+    "precompile/uvm",
     "precompile/utils",
     "precompile/utils/macro",
     "primitives/consensus",
