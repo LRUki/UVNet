@@ -56,7 +56,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			contract_address: Vec<u8>,
 			input: Vec<u8>,
-			gas_limit: Option<Weight>,
+			gas_limit: Weight,
 		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
 
@@ -70,7 +70,7 @@ pub mod pallet {
 				RawOrigin::Signed(from).into(),
 				dest,
 				Default::default(),
-				gas_limit.unwrap_or(Weight::from_parts(20000000000, 10000000)),
+				gas_limit,
 				None,
 				input,
 			);

@@ -5,6 +5,7 @@ use frame_support::{
 	pallet_prelude::Encode,
 	scale_info::TypeInfo,
 	traits::Currency,
+	weights::Weight,
 };
 use pallet_contracts::chain_extension::UncheckedFrom;
 use pallet_evm::{AddressMapping, ExitSucceed, Precompile};
@@ -19,6 +20,8 @@ use sp_std::{fmt::Debug, marker::PhantomData};
 type BalanceOf<T> = <<T as pallet_contracts::Config>::Currency as Currency<
 	<T as frame_system::Config>::AccountId,
 >>::Balance;
+
+const GAS_LIMIT: Weight = Weight::from_parts(20000000000, 10000000);
 
 /// Each variant represents a method that is exposed in the public Solidity interface
 /// The function selectors will be automatically generated at compile-time by the macros
@@ -80,7 +83,8 @@ where
 		// Use pallet-evm's account mapping to determine what AccountId to dispatch from.
 		let origin = R::AddressMapping::into_account_id(handle.context().caller);
 
-		let call = pallet_uvm::Call::<R>::uvm_call { contract_address, input, gas_limit: None };
+		let call =
+			pallet_uvm::Call::<R>::uvm_call { contract_address, input, gas_limit: GAS_LIMIT };
 
 		// Dispatch the call into the runtime.
 		RuntimeHelper::<R>::try_dispatch(handle, Some(origin).into(), call)?;
