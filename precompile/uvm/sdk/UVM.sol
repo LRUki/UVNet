@@ -5,12 +5,12 @@ pragma solidity ^0.8.0;
 import "./IUVM.sol";
 
 contract UVM is IUVM {
-    // Invoke the WASM smart contract function deployed at `to` with the given `input`.
-    function uvmCall(bytes calldata to, bytes calldata input) override external {
+    // Invoke the WASM smart contract function deployed at `dest` with the given `input`.
+    function uvmCall(bytes calldata dest, bytes calldata input) override external {
         
         bytes4 function_selector = calcFuncSelector("uvm_call(bytes,bytes)");
         
-        bytes memory args = encode(function_selector, to, input);
+        bytes memory args = encode(function_selector, dest, input);
     
         assembly {
             // The first 32 bytes of dynamic memory array stores the length of the value.
