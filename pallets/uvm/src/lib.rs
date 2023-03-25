@@ -54,21 +54,18 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn uvm_call(
 			origin: OriginFor<T>,
-			contract_address: Vec<u8>,
+			dest: Vec<u8>,
 			input: Vec<u8>,
 			gas_limit: Weight,
 		) -> DispatchResult {
 			let from = ensure_signed(origin)?;
 
-			let contract_account_id = AccountId32::try_from(&contract_address[..])
-				.map_err(|_| Error::<T>::InvalidInput)?;
-
-			let dest =
-				<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(contract_account_id);
+			let account_id =
+				AccountId32::try_from(&dest[..]).map_err(|_| Error::<T>::InvalidInput)?;
 
 			let res = pallet_contracts::Pallet::<T>::call(
 				RawOrigin::Signed(from).into(),
-				dest,
+				<AccountIdLookup<AccountId32, ()> as StaticLookup>::unlookup(account_id),
 				Default::default(),
 				gas_limit,
 				None,

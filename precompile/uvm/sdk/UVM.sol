@@ -30,7 +30,7 @@ contract UVM is IUVM {
         return bytes4(keccak256(bytes(func)));
     }
 
-    function encode(bytes4 selector, bytes memory contract_address, bytes memory input) public pure returns (bytes memory) {
-        return abi.encodeWithSelector(selector, contract_address, input);
+    function encode(bytes4 selector, bytes memory dest, bytes memory input) public pure returns (bytes memory) {
+        return abi.encodeWithSelector(selector, dest, input);
     }
 }

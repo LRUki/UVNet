@@ -76,15 +76,14 @@ where
 
 		input.expect_arguments(2)?;
 
-		let contract_address = input.read::<Bytes>()?.0;
+		let dest = input.read::<Bytes>()?.0;
 
 		let input = input.read::<Bytes>()?.0;
 
 		// Use pallet-evm's account mapping to determine what AccountId to dispatch from.
 		let origin = R::AddressMapping::into_account_id(handle.context().caller);
 
-		let call =
-			pallet_uvm::Call::<R>::uvm_call { contract_address, input, gas_limit: GAS_LIMIT };
+		let call = pallet_uvm::Call::<R>::uvm_call { dest, input, gas_limit: GAS_LIMIT };
 
 		// Dispatch the call into the runtime.
 		RuntimeHelper::<R>::try_dispatch(handle, Some(origin).into(), call)?;
