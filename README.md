@@ -3,3 +3,19 @@
  __UVNet runtime architecutre__
 
 ![UVM](https://github.com/LRUki/UVNet/assets/50264798/7f264e11-b288-4aeb-bb0b-ee8f725d4be2)
+
+
+To build the binary run:
+```
+cargo build
+```
+
+To run the node in dev mode:
+```
+./target/debug/node-template --dev
+```
+
+
+
+
+
